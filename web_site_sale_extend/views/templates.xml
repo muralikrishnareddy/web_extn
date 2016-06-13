@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+<data>
+
+<!-- Layout and common templates -->
+<template id="assets_frontend_ext" inherit_id="website.assets_frontend" name="Shop Ext">
+  <xpath expr="." position="inside">
+      <link rel='stylesheet' href='/web_site_sale_extend/static/src/css/website_sale_ext.css'/>
+      <link rel='stylesheet' href='/web_site_sale_extend/static/src/css/dialog_box.css'/>
+      <script type="text/javascript" src="/web_site_sale_extend/static/src/js/website_sale_ext.js"></script>
+      <script type="text/javascript" src="/web_site_sale_extend/static/src/js/dialog_box.js"></script>
+  </xpath>
+</template>
+<template id="products_stock_avail" inherit_id="website_sale.products_item" active="False" customize_show="True" name="Product Stock Label">
+  <xpath expr="//div[@class='oe_product_image']" position="inside">  
+    <div style="top:0;left:0;width:50%;position: relative; z-index: 9999;">
+      <t t-if="product.qty_available &gt; 0">
+      <div class="badge btn" style="background-color:green;opacity: 0.6;filter: alpha(opacity=60);">
+          <span t-esc="int(product.qty_available)"/>&#160;
+          <span t-esc="product.uom_id.name" groups="product.group_uom"></span>&#160;
+          <span>In Stock</span>
+      </div>
+      </t>
+      <t t-if="product.qty_available &lt;= 0" style="background-color:red;">
+          <div class="badge btn" style="background-color:red;opacity: 0.6;filter: alpha(opacity=60);">SOLD OUT</div>
+      </t>
+    </div>    
+  </xpath>  
+</template>
+
+<template id="product_stock_avail_add_page" inherit_id="website_sale.product" active="False" customize_show="True" name="Product Stock Available">
+  <xpath expr="//a[@id='add_to_cart']" position="before">
+      <div class="stock_label_div" style="width:50%;position: relative; z-index: 9999;">
+      <t t-if="product.qty_available &gt; 0">
+        <div class="badge btn stock_label" style="background-color:green;opacity: 0.6;filter: alpha(opacity=60);">
+          <span t-esc="int(product.qty_available)"/>&#160;
+          <span t-esc="product.uom_id.name" groups="product.group_uom"></span>&#160;
+          <span>In Stock</span>
+        </div>
+      </t>
+      <t t-if="product.qty_available &lt;= 0" style="background-color:red;">
+        <div class="badge btn stock_label" style="background-color:red;opacity: 0.6;filter: alpha(opacity=60);">SOLD OUT</div>        
+      </t>
+    </div>
+    <div class="stock_label_div_variant" style="width:50%;position: relative; z-index: 9999;">
+      <t>
+        <div class="badge btn stock_label_variant_in hidden" style="background-color:green;opacity: 0.6;filter: alpha(opacity=60);">
+          <span t-esc="int(product.qty_available)" id="qty_avail_variant" name="qty_avail_variant"/>&#160;
+          <span t-esc="product.uom_id.name" groups="product.group_uom"></span>&#160;
+          <span>In Stock</span>
+        </div>
+      </t>
+      <t style="background-color:red;">
+        <div class="badge btn stock_label_variant_out hidden" style="background-color:red;opacity: 0.6;filter: alpha(opacity=60);">SOLD OUT</div>        
+      </t>
+    </div>&#160;
+    <!--span  t-value="product.product_variant_ids[0].id" name="prod_variant_id" id="prod_variant_id"/-->
+    <span t-esc="website.added_to_cart_product_qty(product.id)" name="product_added_qty" id="product_added_qty" class="hidden"/>
+  </xpath>  
+  <xpath expr="//a[@id='add_to_cart']" position="replace">
+      <a id="add_to_cart" t-attf-class="btn btn-primary btn-lg mt8 js_check_product a-submit #{product.qty_available &lt;= 0 and 'disabled'}" href="#" >Add to Cart</a>
+  </xpath>  
+</template> 
+
+<template id="product_quantity_add_page" inherit_id="website_sale.product_quantity">
+  <xpath expr="//input[@name='add_qty']" position="after">    
+    <span id="stock_available" name="stock_available" class="hidden" t-esc="product.qty_available"/>    
+  </xpath>   
+</template> 
+
+<template id="product_quantity_add_cart" inherit_id="website_sale.cart">
+  <xpath expr="//span[@class='input-group-addon']" position="before">    
+    <span id="stock_available_line" t-att-data-line-id="line.id" t-att-data-product-id="line.product_id.id" name="stock_available_line" class="hidden" t-esc="line.product_id.qty_available"/>
+    
+  </xpath> 
+</template> 
+
+</data>
+</openerp>
